@@ -1,0 +1,45 @@
+$block-image-width:
+    {% if site.block_image.width == nil %}
+        240px
+    {% else %}
+        {{ site.block_image.width}}px
+     {% endif %}
+;
+
+$block-image-height:
+    {% if site.block_image.height == nil %}
+        200px
+    {% else %}
+        {{ site.block_image.height}}px
+     {% endif %}
+;
+
+// Using media queries with like this:
+// @include media-query($on-palm) {
+//     .wrapper {
+//         padding-right: $spacing-unit / 2;
+//         padding-left: $spacing-unit / 2;
+//     }
+// }
+@mixin media-query($device) {
+    @media screen and (max-width: $device) {
+        @content;
+    }
+}
+
+
+// Web fonts
+@import url('https://fonts.googleapis.com/css?family=Aguafina+Script');
+
+// Import partials from `sass_dir` (defaults to `_sass`)
+@import
+        "base",
+        "layout",
+        "syntax-highlighting",
+        "comments",
+        "gallery"
+;
+
+@import
+        "block-image"
+;

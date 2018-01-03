@@ -1,0 +1,12 @@
+.block-image-sizer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 3px;
+
+    img {
+        max-width: $block-image-width;
+        max-height: $block-image-height;
+    }
+}
