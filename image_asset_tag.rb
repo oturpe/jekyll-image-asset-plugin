@@ -18,7 +18,7 @@
 # Usage:
 # 1. Save an image file to asset path of a page or post
 # 2. Include the image as follows:
-#        {% image "Description of the image" "filename in asset path.ext" %}
+#        {% image "Description of the image" "filename in asset path.ext" "Copyright Holder Name" %}
 
 module Jekyll
   class ImageAssetTag < Liquid::Tag
@@ -30,32 +30,72 @@ module Jekyll
       super
     end
 
+    def parseNextParameter(parameterString)
+      if (parameterString == nil)
+        return nil, ""
+      end
+
+      parameterString.strip!
+
+      if (parameterString.length == 0)
+        return nil, ""
+      end
+
+      if ['"', "'"].include? parameterString[0] 
+        # Quoted or whitespace limited description, possibly followed by post id
+        next_quote_index = parameterString.index(parameterString[0], 1)
+        nextParameter = parameterString[1 ... next_quote_index]
+        if parameterString.length > next_quote_index
+          remaining = parameterString[(next_quote_index + 1) .. -1]
+        else
+          remaining = ""
+        end
+      else
+        # Unquoted parameter
+        whitespace_index = parameterString.index(' ', 0)
+        if (whitespace_index == nil)
+          nextParameter = parameterString
+          remaining = ""
+        else
+          nextParameter = parameterString[0 ... whitespace_index]
+          remaining = parameterString[(whitespace_index + 1) .. -1]
+        end
+      end
+
+      return nextParameter, remaining
+    end
+
+    def parseParameters(parameterString)
+      parameterString.strip!
+
+      description, parameterString = parseNextParameter(parameterString)
+      filename, parameterString = parseNextParameter(parameterString)
+      copyright, parameterString = parseNextParameter(parameterString)
+
+      print "desc: #{description}, filename: #{filename}, copyright: #{copyright}\n"
+
+      return description, filename, copyright
+    end
+
     def render(context)
       if @markup.empty?
-        return 'Error processing input, expected syntax: {% image "description" "filename" %}'
+        return 'Error processing input, expected syntax: {% image "description" "filename" "Copyright Holder Name" %}'
       end
 
       #render the markup
       parameters = Liquid::Template.parse(@markup).render context
-      parameters.strip!
 
-      if ['"', "'"].include? parameters[0] 
-        # Quoted description, possibly followed by post id
-        next_quote_index = parameters.index(parameters[0], 1)
-        description = parameters[1 ... next_quote_index]
-        filename = parameters[(next_quote_index + 1) .. -1].strip.gsub(/["']/,'')
-      else
-        # Unquoted filename, followed by post id
-        whitespace_index = parameters.index(' ', 0)
-        description = parameters[0 ... whitespace_index]
-        filename = parameters[(whitespace_index + 1) .. -1].strip.gsub(/["']/,'')
-      end
+      description, filename, copyright = parseParameters(parameters)
 
       path = AssetPathTools.resolve(context, filename)
+      title = description
+      if (copyright != nil)
+        title = "#{title} © #{copyright}"
+      end
 
       %[<div class="block-image-sizer">
           <a href="#{path}">
-            <img src="#{path}" alt="#{description}">
+            <img src="#{path}" alt="#{description}" title="#{title}">
           </a>
         </div>
       ]
