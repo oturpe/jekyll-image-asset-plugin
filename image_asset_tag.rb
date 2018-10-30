@@ -72,8 +72,6 @@ module Jekyll
       filename, parameterString = parseNextParameter(parameterString)
       copyright, parameterString = parseNextParameter(parameterString)
 
-      print "desc: #{description}, filename: #{filename}, copyright: #{copyright}\n"
-
       return description, filename, copyright
     end
 

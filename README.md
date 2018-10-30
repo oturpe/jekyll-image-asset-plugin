@@ -21,4 +21,4 @@ of jekyll-asset-path-plugin. Consequently, this plugin depends on
 
 ## Usage
 1. Save an image file to asset path of a page or post
-2. Include the image as follows: `{% image "Description of the image" "filename in asset path.ext" %}`
+2. Include the image as follows: `{% image "Description of the image" "filename in asset path.ext" "Copyright Holder Name" %}`
